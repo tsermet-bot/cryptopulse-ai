@@ -471,11 +471,23 @@ if data and 'market_data' in data:
     with t_cal:
         st.dataframe(pd.DataFrame([{"Date": "2026-08-12", "Event": "FOMC Interest Rate Decision", "Impact": "🔥 High Volatility"}]), use_container_width=True, hide_index=True)
 
-    # 18. CORRELATION MATRIX
+    # 18. CORRELATION MATRIX (FIXED FOR DUPLICATE ERROR)
     with t_corr:
-        corr_data = np.random.uniform(0.65, 0.98, size=(4, 4))
+        corr_assets = list(dict.fromkeys(['BTC', 'ETH', 'SOL', raw_sym]))
+        num_assets = len(corr_assets)
+        
+        corr_data = np.random.uniform(0.65, 0.98, size=(num_assets, num_assets))
         np.fill_diagonal(corr_data, 1.0)
-        st.plotly_chart(px.imshow(pd.DataFrame(corr_data, columns=['BTC', 'ETH', 'SOL', raw_sym], index=['BTC', 'ETH', 'SOL', raw_sym]), text_auto=".2f", color_continuous_scale="Viridis"), use_container_width=True)
+        
+        for i in range(num_assets):
+            for j in range(i + 1, num_assets):
+                corr_data[j, i] = corr_data[i, j]
+
+        corr_df = pd.DataFrame(corr_data, columns=corr_assets, index=corr_assets)
+        st.plotly_chart(
+            px.imshow(corr_df, text_auto=".2f", color_continuous_scale="Viridis"), 
+            use_container_width=True
+        )
 
     # 19. PRICE ALERTS
     with t_alert:
