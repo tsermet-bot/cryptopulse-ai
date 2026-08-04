@@ -34,7 +34,6 @@ sia = SentimentIntensityAnalyzer()
 GA_MEASUREMENT_ID = "G-XXXXXXXXXX"
 
 ga_html = f"""
-<!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -116,38 +115,19 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- TRADINGVIEW TICKER TAPE (ΔΕΙΞΤΕΣ & ΠΕΤΡΕΛΑΙΟ) ---
+# --- TRADINGVIEW TICKER TAPE ---
 ticker_html = """
-<!-- TradingView Widget BEGIN -->
 <div class="tradingview-widget-container">
   <div class="tradingview-widget-container__widget"></div>
   <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
   {
   "symbols": [
-    {
-      "proName": "FOREXCOM:SPXUSD",
-      "title": "S&P 500"
-    },
-    {
-      "proName": "FOREXCOM:NSXUSD",
-      "title": "US Tech 100 (Nasdaq)"
-    },
-    {
-      "proName": "FOREXCOM:DJI",
-      "title": "Dow Jones"
-    },
-    {
-      "proName": "TVC:USOIL",
-      "title": "Crude Oil"
-    },
-    {
-      "proName": "TVC:NI225",
-      "title": "Nikkei 225"
-    },
-    {
-      "proName": "SSE:000001",
-      "title": "Shanghai Composite"
-    }
+    { "proName": "FOREXCOM:SPXUSD", "title": "S&P 500" },
+    { "proName": "FOREXCOM:NSXUSD", "title": "US Tech 100 (Nasdaq)" },
+    { "proName": "FOREXCOM:DJI", "title": "Dow Jones" },
+    { "proName": "TVC:USOIL", "title": "Crude Oil" },
+    { "proName": "TVC:NI225", "title": "Nikkei 225" },
+    { "proName": "SSE:000001", "title": "Shanghai Composite" }
   ],
   "showSymbolLogo": true,
   "isTransparent": true,
@@ -157,7 +137,6 @@ ticker_html = """
 }
   </script>
 </div>
-<!-- TradingView Widget END -->
 """
 components.html(ticker_html, height=50)
 
@@ -713,36 +692,31 @@ st.markdown("---")
 revolut_url = "https://revolut.me/tsermet"
 solana_address = "8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1"
 
-# Dynamic QR Code generation via API
 revolut_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={revolut_url}"
 solana_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={solana_address}"
 
-st.markdown(f"""
-    <div style="text-align: center; background-color: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d;">
-        <h4 style="color: #ffffff; margin-bottom: 20px;">💳 Revolut & Crypto Direct Transfer</h4>
-        
-        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
-            
-            <!-- REVOLUT BOX -->
-            <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 220px; text-align: center;">
-                <p style="color: #0075ff; font-weight: bold; margin-bottom: 10px; font-size: 14px;">💳 Revolut Pay</p>
-                <img src="{revolut_qr}" alt="Revolut QR" style="border-radius: 6px; margin-bottom: 10px; width: 120px; height: 120px;" />
-                <br>
-                <a href="{revolut_url}" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 6px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px;">
-                    Pay via Revolut
-                </a>
-            </div>
-
-            <!-- SOLANA BOX -->
-            <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 280px; text-align: center;">
-                <p style="color: #14f195; font-weight: bold; margin-bottom: 10px; font-size: 14px;">◎ Solana (SOL / USDC)</p>
-                <img src="{solana_qr}" alt="Solana QR" style="border-radius: 6px; margin-bottom: 10px; width: 120px; height: 120px;" />
-                <br>
-                <code style="color: #8b949e; font-size: 11px; word-break: break-all; background-color: #161b22; padding: 4px 6px; border-radius: 4px; display: block; margin-top: 5px;">
-                    {solana_address}
-                </code>
-            </div>
-
+footer_html = f"""
+<div style="text-align: center; background-color: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d;">
+    <h4 style="color: #ffffff; margin-bottom: 20px;">💳 Revolut & Crypto Direct Transfer</h4>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
+        <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 220px; text-align: center;">
+            <p style="color: #0075ff; font-weight: bold; margin-bottom: 10px; font-size: 14px;">💳 Revolut Pay</p>
+            <img src="{revolut_qr}" alt="Revolut QR" style="border-radius: 6px; margin-bottom: 10px; width: 120px; height: 120px;" />
+            <br>
+            <a href="{revolut_url}" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 6px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px;">
+                Pay via Revolut
+            </a>
+        </div>
+        <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 280px; text-align: center;">
+            <p style="color: #14f195; font-weight: bold; margin-bottom: 10px; font-size: 14px;">◎ Solana (SOL / USDC)</p>
+            <img src="{solana_qr}" alt="Solana QR" style="border-radius: 6px; margin-bottom: 10px; width: 120px; height: 120px;" />
+            <br>
+            <code style="color: #8b949e; font-size: 11px; word-break: break-all; background-color: #161b22; padding: 4px 6px; border-radius: 4px; display: block; margin-top: 5px;">
+                {solana_address}
+            </code>
         </div>
     </div>
-""", unsafe_allow_html=True)
+</div>
+"""
+
+st.markdown(footer_html, unsafe_allow_html=True)
