@@ -1,3 +1,10 @@
+import warnings
+warnings.filterwarnings('ignore')
+
+from streamlit_autorefresh import st_autorefresh
+
+# Αυτόματη ανανέωση κάθε 30 δευτερόλεπτα
+count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 import streamlit as st
 import requests
 import pandas as pd
@@ -308,7 +315,7 @@ if data and 'market_data' in data:
         st.subheader(t["gauge_title"])
         fig_g = go.Figure(go.Indicator(mode="gauge+number", value=current_rsi, title={'text': f"RSI Score: {selected_coin_name.upper()}", 'font': {'color':'white'}}, gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#00f2fe"}}))
         fig_g.update_layout(height=200, margin=dict(l=10, r=10, t=30, b=10), paper_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_g, use_container_width=True)
+        st.plotly_chart(fig_g, use_container_width="stretch")
 
         st.caption(t["reddit_pie"])
         fig_pie = px.pie(values=list(sentiment_counts), names=['Positive', 'Neutral', 'Negative'], color_discrete_sequence=['#00c853', '#ffee58', '#ff1744'], hole=0.4)

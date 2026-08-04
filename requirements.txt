@@ -4,3 +4,10 @@ pandas
 numpy
 plotly
 nltk
+streamlit-autorefresh:streamlit
+requests
+pandas
+numpy
+plotly
+nltk
+streamlit-autorefresh
