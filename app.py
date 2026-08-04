@@ -1,5 +1,7 @@
 import warnings
 warnings.filterwarnings('ignore')
+import warnings
+warnings.filterwarnings('ignore')
 
 import streamlit as st
 
@@ -60,9 +62,8 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
-    page_title="CryptoPulse AI — Institutional Terminal",
-    page_icon="⚡",
-    layout="wide")
+
+# --- ΤΟ ΥΠΟΛΟΙΠΟ SCRIPT ΣΟΥ ΞΕΚΙΝΑΕΙ ΕΔΩ ---
 
 # Custom CSS
 st.markdown("""
