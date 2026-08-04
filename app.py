@@ -23,13 +23,13 @@ count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 nltk.download('vader_lexicon', quiet=True)
 sia = SentimentIntensityAnalyzer()
 
-# --- GLOBAL CUSTOM CSS FOR READABILITY & SIDEBAR FIX ---
+# --- GLOBAL CUSTOM CSS FOR HIGH CONTRAST & VISIBILITY ---
 st.markdown("""
     <style>
     /* Φόντο εφαρμογής */
     .stApp { 
         background-color: #0b0e14; 
-        color: #e6edf3; 
+        color: #ffffff !important; 
     }
     
     /* Sidebar Styling */
@@ -67,6 +67,35 @@ st.markdown("""
         background-color: #2a303f !important;
     }
 
+    /* --- FIXED TABS VISIBILITY --- */
+    /* Όλες οι καρτέλες (Tabs) - Μη επιλεγμένες */
+    button[data-baseweb="tab"] {
+        background-color: transparent !important;
+        border-radius: 6px 6px 0px 0px !important;
+        padding: 8px 16px !important;
+    }
+    
+    /* Γράμματα στις μη επιλεγμένες καρτέλες */
+    button[data-baseweb="tab"] div p, button[data-baseweb="tab"] p, button[data-baseweb="tab"] span {
+        color: #9da8b6 !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Ενεργή/Επιλεγμένη Καρτέλα */
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: #1a202c !important;
+        border-bottom: 3px solid #58a6ff !important;
+    }
+
+    /* Γράμματα στην ενεργή καρτέλα */
+    button[data-baseweb="tab"][aria-selected="true"] div p, 
+    button[data-baseweb="tab"][aria-selected="true"] p, 
+    button[data-baseweb="tab"][aria-selected="true"] span {
+        color: #ffffff !important;
+        font-weight: bold !important;
+    }
+
     /* Metrics & Custom Components */
     div[data-testid="stMetricValue"] { 
         color: #58a6ff !important; 
@@ -81,15 +110,6 @@ st.markdown("""
         font-weight: bold; 
         font-size: 1.1rem; 
         margin-bottom: 15px; 
-    }
-
-    /* Tabs */
-    button[data-baseweb="tab"] {
-        color: #a0aab5 !important;
-    }
-    button[data-baseweb="tab"][aria-selected="true"] {
-        color: #ffffff !important;
-        font-weight: bold !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -434,7 +454,7 @@ if data and 'market_data' in data:
     with t_news:
         news_items = [
             {"Source": "CoinDesk", "Headline": f"Institutional Inflows into {selected_coin_name} Surge Following Market Rally", "Time": "10 mins ago"},
-            {"Source": "Cointelepragh", "Headline": "Federal Reserve Signals Potential Policy Shift; Crypto Markets React Positively", "Time": "35 mins ago"}
+            {"Source": "Cointelegraph", "Headline": "Federal Reserve Signals Potential Policy Shift; Crypto Markets React Positively", "Time": "35 mins ago"}
         ]
         for n in news_items:
             st.markdown(f"🔹 **[{n['Source']}]** {n['Headline']} _({n['Time']})_")
