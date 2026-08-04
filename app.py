@@ -31,7 +31,6 @@ nltk.download('vader_lexicon', quiet=True)
 sia = SentimentIntensityAnalyzer()
 
 # --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
-# Αντικατάστησε το 'G-XXXXXXXXXX' με το δικό σου Measurement ID όταν το δημιουργήσεις
 GA_MEASUREMENT_ID = "G-XXXXXXXXXX"
 
 ga_html = f"""
@@ -390,7 +389,7 @@ if data and 'market_data' in data:
     st.subheader(t["suite_title"])
     t_regime, t_imbalance, t_altseason, t_lunar, t_ai, t_deriv, t_chain, t_gas, t_news, t_macro, t_cons, t_heat, t_depth, t_calc, t_whale, t_port, t_dca, t_red, t_watch, t_cal, t_corr, t_alert, t_pdf = st.tabs(t["tabs"])
 
-    # NEW TAB 1: MARKET REGIME & VOLATILITY INDEX
+    # TAB 1: MARKET REGIME & VOLATILITY INDEX
     with t_regime:
         st.markdown("### 🌐 Market Regime & Volatility Model")
         regime_status = "Accumulation Phase 🟢" if current_rsi < 45 else ("Markup / Bullish 🚀" if current_rsi < 65 else "Distribution 🔴")
@@ -408,7 +407,7 @@ if data and 'market_data' in data:
         ])
         st.table(reg_df)
 
-    # NEW TAB 2: ORDERBOOK IMBALANCE GAUGE
+    # TAB 2: ORDERBOOK IMBALANCE GAUGE
     with t_imbalance:
         st.markdown("### 📊 Orderbook Depth Imbalance Ratio (Top 2% Depth)")
         buy_depth = 62.4
@@ -427,7 +426,7 @@ if data and 'market_data' in data:
         fig_imb.update_layout(template="plotly_dark", height=200, title="Orderbook Pressure Ratio")
         st.plotly_chart(fig_imb, use_container_width=True)
 
-    # NEW TAB 3: ALTCOIN SEASON INDEX
+    # TAB 3: ALTCOIN SEASON INDEX
     with t_altseason:
         st.markdown("### 🌟 Altseason Index Meter")
         altseason_val = 68
@@ -571,7 +570,7 @@ if data and 'market_data' in data:
         fig_ob.update_layout(template="plotly_dark", height=270)
         st.plotly_chart(fig_ob, use_container_width=True)
 
-    # RISK CALCULATOR & DYNAMIC POSITION SIZING (ANABATHMISMENO)
+    # RISK CALCULATOR & DYNAMIC POSITION SIZING
     with t_calc:
         st.markdown("### 🧮 Dynamic Position Sizing & Risk Engine")
         col_rk1, col_rk2 = st.columns(2)
@@ -708,17 +707,42 @@ if data and 'market_data' in data:
         """
         components.html(tv_widget, height=420)
 
-# --- FOOTER ---
+# --- FOOTER WITH REVOLUT & CRYPTO QR CODES ---
 st.markdown("---")
-st.markdown("""
-    <div style="text-align: center; background-color: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d;">
-        <h4 style="color: #ffffff; margin-bottom: 12px;">💳 Revolut & Crypto Direct Transfer</h4>
-        <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
-            <a href="https://revolut.me/tsermet" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px;">💳 Revolut Pay</a>
-        </div>
-        <div style="background-color: #0d1117; padding: 12px 18px; border-radius: 8px; border: 1px solid #21262d; display: inline-block;">
-            <span style="color: #14f195; font-weight: bold; font-size: 13px;">◎ Solana (SOL / USDC / USDT):</span><br>
-            <code style="color: #ffffff; font-size: 13px; background-color: transparent;">8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1</code>
+
+revolut_url = "https://revolut.me/tsermet"
+solana_address = "8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1"
+
+# Dynamic QR Code generation via API
+revolut_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={revolut_url}"
+solana_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={solana_address}"
+
+st.markdown(f"""
+    <div style="text-align: center; background-color: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d;">
+        <h4 style="color: #ffffff; margin-bottom: 20px;">💳 Revolut & Crypto Direct Transfer</h4>
+        
+        <div style="display: flex; justify-content: center; align-items: center; gap: 40px; flex-wrap: wrap;">
+            
+            <!-- REVOLUT BOX -->
+            <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 220px; text-align: center;">
+                <p style="color: #0075ff; font-weight: bold; margin-bottom: 10px; font-size: 14px;">💳 Revolut Pay</p>
+                <img src="{revolut_qr}" alt="Revolut QR" style="border-radius: 6px; margin-bottom: 10px; width: 120px; height: 120px;" />
+                <br>
+                <a href="{revolut_url}" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 6px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px;">
+                    Pay via Revolut
+                </a>
+            </div>
+
+            <!-- SOLANA BOX -->
+            <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 280px; text-align: center;">
+                <p style="color: #14f195; font-weight: bold; margin-bottom: 10px; font-size: 14px;">◎ Solana (SOL / USDC)</p>
+                <img src="{solana_qr}" alt="Solana QR" style="border-radius: 6px; margin-bottom: 10px; width: 120px; height: 120px;" />
+                <br>
+                <code style="color: #8b949e; font-size: 11px; word-break: break-all; background-color: #161b22; padding: 4px 6px; border-radius: 4px; display: block; margin-top: 5px;">
+                    {solana_address}
+                </code>
+            </div>
+
         </div>
     </div>
 """, unsafe_allow_html=True)
