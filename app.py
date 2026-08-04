@@ -175,14 +175,6 @@ crypto_id = selected_coin_info["id"]
 tv_symbol = selected_coin_info["symbol"]
 selected_coin_name = selected_coin_info["name"]
 
-# --- DONATIONS WIDGET (SIDEBAR - ONLY PAYPAL, BUY ME A COFFEE, REVOLUT) ---
-st.sidebar.markdown("---")
-st.sidebar.subheader(t["support"])
-with st.sidebar.expander(t["donations_title"]):
-    st.markdown("[💳 Revolut Pay](https://revolut.me/yourusername)", unsafe_allow_html=True)
-    st.markdown("[👉 PayPal](https://paypal.me/yourusername)", unsafe_allow_html=True)
-    st.markdown("[☕ Buy Me A Coffee](https://buymeacoffee.com/yourusername)", unsafe_allow_html=True)
-
 # --- DATA FETCHING FUNCTIONS ---
 @st.cache_data(ttl=300)
 def get_crypto_data(coin):
