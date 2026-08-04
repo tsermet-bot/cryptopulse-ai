@@ -488,18 +488,21 @@ if data and 'market_data' in data:
         if st.button("🔔 Set Alert"):
             st.success(f"Alert active for {selected_coin_name} at ${target_a:,.2f}!")
 
-    # --- FOOTER DONATIONS BOX (ONLY REVOLUT, PAYPAL, BUY ME A COFFEE) ---
-    st.markdown("---")
-    st.markdown(f"""
-        <div class='donate-box'>
-            <h3>{t['support']}</h3>
-            <p>
-                <a href="https://revolut.me/yourusername" target="_blank" style="margin-right: 15px; text-decoration: none;">💳 Revolut Pay</a> | 
-                <a href="https://paypal.me/yourusername" target="_blank" style="margin-left: 15px; margin-right: 15px; text-decoration: none;">👉 PayPal</a> | 
-                <a href="https://buymeacoffee.com/yourusername" target="_blank" style="margin-left: 15px; text-decoration: none;">☕ Buy Me A Coffee</a>
-            </p>
+    # --- FOOTER DONATIONS & SOCIALS BOX ---
+st.markdown("---")
+st.markdown("""
+    <div style="text-align: center; background-color: #1a1c23; padding: 20px; border-radius: 10px; border: 1px solid #2d313e;">
+        <h4 style="color: #ffffff; margin-bottom: 10px;">☕ Στηρίξτε το CryptoPulse AI</h4>
+        <p style="color: #a0a0a0; font-size: 14px; margin-bottom: 15px;">Αν σας φαίνεται χρήσιμη η εφαρμογή, μπορείτε να ενισχύσετε την ανάπτυξή της!</p>
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+            <a href="https://revolut.me/tsermet" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 8px 16px; border-radius: 5px; font-weight: bold;">💳 Revolut Me</a>
+            <a href="https://x.com" target="_blank" style="text-decoration: none; background-color: #1da1f2; color: white; padding: 8px 16px; border-radius: 5px; font-weight: bold;">🐦 Follow on X</a>
         </div>
-    """, unsafe_allow_html=True)
+        <div style="background-color: #121318; padding: 10px 15px; border-radius: 8px; font-size: 13px; color: #00d46a; display: inline-block;">
+            💙 <strong>USDC (Solana / OKX):</strong> <code style="color: #ffffff;">8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1</code>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
 else:
     st.error("API Connection Error. Please refresh.")
