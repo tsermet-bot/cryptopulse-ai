@@ -171,9 +171,6 @@ translations = {
 
 t = translations.get(selected_lang, translations["EN 🇬🇧"])
 
-st.title(t["title"])
-st.caption(t["subtitle"])
-
 # --- MULTI-API FALLBACK COIN FETCHING ---
 @st.cache_data(ttl=3600)
 def get_top_100_coins():
@@ -209,6 +206,39 @@ crypto_id = selected_coin_info["id"]
 tv_symbol = selected_coin_info["symbol"]
 raw_sym = selected_coin_info["raw_symbol"]
 selected_coin_name = selected_coin_info["name"]
+
+# --- SIDEBAR PAYMENT / DONATION SECTION ---
+st.sidebar.markdown("---")
+st.sidebar.subheader("💳 Revolut & Crypto Direct")
+
+revolut_url = "https://revolut.me/tsermet"
+solana_address = "8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1"
+
+sidebar_revolut_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={revolut_url}"
+sidebar_solana_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={solana_address}"
+
+st.sidebar.markdown(f"""
+<div style="background-color: #0d1117; padding: 10px; border-radius: 8px; border: 1px solid #21262d; text-align: center; margin-bottom: 10px;">
+    <p style="color: #0075ff; font-weight: bold; margin-bottom: 5px; font-size: 13px;">💳 Revolut Pay</p>
+    <img src="{sidebar_revolut_qr}" alt="Revolut QR" style="border-radius: 6px; width: 90px; height: 90px;" />
+    <br>
+    <a href="{revolut_url}" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; margin-top: 5px;">
+        Pay via Revolut
+    </a>
+</div>
+<div style="background-color: #0d1117; padding: 10px; border-radius: 8px; border: 1px solid #21262d; text-align: center;">
+    <p style="color: #14f195; font-weight: bold; margin-bottom: 5px; font-size: 13px;">◎ Solana (SOL / USDC)</p>
+    <img src="{sidebar_solana_qr}" alt="Solana QR" style="border-radius: 6px; width: 90px; height: 90px;" />
+    <br>
+    <code style="color: #8b949e; font-size: 9px; word-break: break-all; background-color: #161b22; padding: 3px; border-radius: 4px; display: block; margin-top: 5px;">
+        {solana_address}
+    </code>
+</div>
+""", unsafe_allow_html=True)
+
+# --- MAIN DASHBOARD INTERFACE ---
+st.title(t["title"])
+st.caption(t["subtitle"])
 
 # --- DATA FETCHING & PROCESSING ---
 @st.cache_data(ttl=300)
@@ -350,7 +380,7 @@ if data and 'market_data' in data:
     signal_color = "#00c853" if "BUY" in signal_text else "#ffee58"
     st.markdown(f'<div class="signal-card" style="background-color: {signal_color}22; border: 2px solid {signal_color}; color: {signal_color};">🤖 CryptoPulse AI Consensus: {signal_text}</div>', unsafe_allow_html=True)
 
-    # --- 6. AI TRADE SETUP SUMMARY GENERATOR (CARD) ---
+    # --- AI TRADE SETUP SUMMARY GENERATOR (CARD) ---
     entry_zone = price * 0.985
     stop_loss = price * 0.945
     tp1 = price * 1.06
@@ -688,9 +718,6 @@ if data and 'market_data' in data:
 
 # --- FOOTER WITH REVOLUT & CRYPTO QR CODES ---
 st.markdown("---")
-
-revolut_url = "https://revolut.me/tsermet"
-solana_address = "8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1"
 
 revolut_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={revolut_url}"
 solana_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=130x130&data={solana_address}"
