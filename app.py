@@ -10,8 +10,6 @@ from streamlit_autorefresh import st_autorefresh
 import requests
 import pandas as pd
 import numpy as np
-import plotly.graph_objects as go
-import plotly.express as px
 import streamlit.components.v1 as components
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
@@ -58,6 +56,10 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- SIDEBAR & MULTI-LANGUAGE ---
+st.sidebar.header("⚙️ Settings / Ρυθμίσεις")
+selected_lang = st.sidebar.selectbox("🌐 Select Language / Γλώσσα:", ["EL 🇬🇷", "EN 🇬🇧"], index=0)
+
 # --- FETCH TOP 100 COINS ---
 @st.cache_data(ttl=3600)
 def get_top_100_coins():
@@ -70,10 +72,6 @@ def get_top_100_coins():
             return {f"{c['name']} ({c['symbol'].upper()})": {"id": c['id'], "symbol": f"{c['symbol'].upper()}USD", "raw_symbol": c['symbol'].upper(), "name": c['name']} for c in coins}
     except Exception: pass
     return fallback_dict
-
-# --- SIDEBAR SETTINGS ---
-st.sidebar.header("⚙️ Settings / Ρυθμίσεις")
-selected_lang = st.sidebar.selectbox("🌐 Select Language / Γλώσσα:", ["EL 🇬🇷", "EN 🇬🇧"], index=0)
 
 coin_options = get_top_100_coins()
 selected_coin_label = st.sidebar.selectbox("Επίλεξε Νόμισμα (Top 100):", list(coin_options.keys()), index=0)
@@ -102,30 +100,35 @@ def get_advanced_ohlc(coin):
             df = pd.DataFrame(res.json(), columns=['timestamp', 'open', 'high', 'low', 'close'])
             df['date'] = pd.to_datetime(df['timestamp'], unit='ms')
             
-            # Indicators
+            # 1. RSI (14)
             delta = df['close'].diff()
             gain = (delta.where(delta > 0, 0)).rolling(window=14, min_periods=1).mean()
             loss = (-delta.where(delta < 0, 0)).rolling(window=14, min_periods=1).mean().replace(0, 0.00001)
             df['RSI'] = 100 - (100 / (1 + (gain / loss)))
 
+            # 2. Stochastic RSI
             min_rsi = df['RSI'].rolling(window=14, min_periods=1).min()
             max_rsi = df['RSI'].rolling(window=14, min_periods=1).max()
             df['Stoch_RSI'] = ((df['RSI'] - min_rsi) / (max_rsi - min_rsi).replace(0, 0.00001)) * 100
 
+            # 3. EMAs
             df['EMA20'] = df['close'].ewm(span=20, adjust=False).mean()
             df['EMA50'] = df['close'].ewm(span=50, adjust=False).mean()
             df['EMA200'] = df['close'].ewm(span=200, adjust=False).mean()
 
+            # 4. MACD
             ema12 = df['close'].ewm(span=12, adjust=False).mean()
             ema26 = df['close'].ewm(span=26, adjust=False).mean()
             df['MACD'] = ema12 - ema26
             df['MACD_Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
 
+            # 5. Bollinger Bands
             df['SMA20'] = df['close'].rolling(window=20, min_periods=1).mean()
             std = df['close'].rolling(window=20, min_periods=1).std().fillna(0)
             df['BB_Upper'] = df['SMA20'] + (std * 2)
             df['BB_Lower'] = df['SMA20'] - (std * 2)
 
+            # 6. ROC
             df['ROC'] = df['close'].pct_change(periods=9) * 100
 
             return df
@@ -150,10 +153,10 @@ st.title(f"⚡ CryptoPulse AI — {selected_coin_name}")
 
 # --- TABS SETUP ---
 tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 Technical Analysis & Signal", 
-    "🧠 Sentiment & News", 
-    "🧮 Risk Calculator", 
-    "😱 Fear & Greed Index"
+    "📊 Τεχνική Ανάλυση & Σήμα", 
+    "🧠 Sentiment & Ειδήσεις", 
+    "🧮 Υπολογιστής Ρίσκου", 
+    "😱 Δείκτης Φόβου / Απληστίας"
 ])
 
 # ==================== TAB 1: TECHNICAL ANALYSIS ====================
@@ -161,7 +164,6 @@ with tab1:
     if data and 'market_data' in data and not ohlc_df.empty:
         market_data = data['market_data']
         price = market_data['current_price']['usd']
-        price_change = market_data.get('price_change_percentage_24h') or 0.0
         
         last = ohlc_df.iloc[-1]
         rsi = last['RSI']
@@ -175,7 +177,7 @@ with tab1:
         bb_upper = last['BB_Upper']
         roc = last['ROC'] if not pd.isna(last['ROC']) else 0.0
 
-        # SCORE CALCULATOR
+        # ΑΛΓΟΡΙΘΜΟΣ ΑΞΙΟΠΙΣΤΙΑΣ (8 ΔΕΙΚΤΕΣ)
         score = 0
         max_score = 8
 
@@ -264,7 +266,7 @@ with tab2:
     ]
     
     sentiment_scores = [sia.polarity_scores(text)['compound'] for text in sample_headlines]
-    avg_sentiment = np.mean(sentiment_scores)
+    avg_sentiment = float(np.mean(sentiment_scores)) if sentiment_scores else 0.0
     
     st.metric("AI Sentiment Score", f"{avg_sentiment:+.2f}", "Bullish 🟢" if avg_sentiment > 0.05 else "Bearish 🔴")
     
@@ -277,18 +279,19 @@ with tab2:
 with tab3:
     st.subheader("🧮 Υπολογιστής Ρίσκου & Position Sizing")
     
+    current_p = float(data['market_data']['current_price']['usd']) if data and 'market_data' in data else 100.0
+    
     col_r1, col_r2 = st.columns(2)
     with col_r1:
         account_balance = st.number_input("Κεφάλαιο Λογαριασμού ($):", value=1000.0, step=100.0)
         risk_percentage = st.slider("Ρίσκο ανά Trade (%):", min_value=0.5, max_value=5.0, value=2.0, step=0.5)
     
     with col_r2:
-        entry_p = st.number_input("Τιμή Εισόδου ($):", value=float(price if data else 100.0))
-        stop_p = st.number_input("Τιμή Stop Loss ($):", value=float(price * 0.95 if data else 95.0))
+        entry_p = st.number_input("Τιμή Εισόδου ($):", value=current_p)
+        stop_p = st.number_input("Τιμή Stop Loss ($):", value=round(current_p * 0.95, 2))
 
     if entry_p > stop_p:
         risk_amount = account_balance * (risk_percentage / 100)
-        price_risk_pct = (entry_p - stop_p) / entry_p
         position_size = risk_amount / (entry_p - stop_p)
         total_position_usd = position_size * entry_p
 
@@ -311,6 +314,6 @@ with tab4:
     st.progress(fng_val / 100)
     
     if fng_val < 25:
-        st.info("💡 **Extreme Fear:** Ιστορικά, ο ακραίος φόβος αποτελεί ευκαιρία αγοράς (Buffett: 'Be greedy when others are fearful').")
+        st.info("💡 **Extreme Fear:** Ιστορικά, ο ακραίος φόβος αποτελεί ευκαιρία αγοράς.")
     elif fng_val > 75:
         st.warning("⚠️ **Extreme Greed:** Η αγορά είναι υπερθερμασμένη. Προσοχή σε πιθανές διορθώσεις.")
