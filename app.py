@@ -30,6 +30,22 @@ count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 nltk.download('vader_lexicon', quiet=True)
 sia = SentimentIntensityAnalyzer()
 
+# --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
+# Αντικατάστησε το 'G-XXXXXXXXXX' με το δικό σου Measurement ID όταν το δημιουργήσεις
+GA_MEASUREMENT_ID = "G-XXXXXXXXXX"
+
+ga_html = f"""
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', '{GA_MEASUREMENT_ID}');
+</script>
+"""
+components.html(ga_html, height=0, width=0)
+
 # --- GLOBAL CUSTOM CSS FOR HIGH CONTRAST & DARK INSTITUTIONAL THEME ---
 st.markdown("""
     <style>
@@ -695,13 +711,14 @@ if data and 'market_data' in data:
 # --- FOOTER ---
 st.markdown("---")
 st.markdown("""
-    <div style="text-align: center; background-color: #1a1c23; padding: 20px; border-radius: 10px; border: 1px solid #2d313e;">
-        <h4 style="color: #ffffff; margin-bottom: 10px;">☕ Στηρίξτε το CryptoPulse AI Terminal</h4>
-        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
-            <a href="https://revolut.me/tsermet" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 8px 16px; border-radius: 5px; font-weight: bold;">💳 Revolut Me</a>
+    <div style="text-align: center; background-color: #161b22; padding: 20px; border-radius: 10px; border: 1px solid #30363d;">
+        <h4 style="color: #ffffff; margin-bottom: 12px;">💳 Revolut & Crypto Direct Transfer</h4>
+        <div style="display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 15px;">
+            <a href="https://revolut.me/tsermet" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 10px 20px; border-radius: 6px; font-weight: bold; font-size: 14px;">💳 Revolut Pay</a>
         </div>
-        <div style="background-color: #121318; padding: 10px 15px; border-radius: 8px; font-size: 13px; color: #00d46a; display: inline-block;">
-            💙 <strong>USDC (Solana / OKX):</strong> <code style="color: #ffffff;">8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1</code>
+        <div style="background-color: #0d1117; padding: 12px 18px; border-radius: 8px; border: 1px solid #21262d; display: inline-block;">
+            <span style="color: #14f195; font-weight: bold; font-size: 13px;">◎ Solana (SOL / USDC / USDT):</span><br>
+            <code style="color: #ffffff; font-size: 13px; background-color: transparent;">8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1</code>
         </div>
     </div>
 """, unsafe_allow_html=True)
