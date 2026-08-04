@@ -1,7 +1,5 @@
 import warnings
 warnings.filterwarnings('ignore')
-import warnings
-warnings.filterwarnings('ignore')
 
 import streamlit as st
 
@@ -60,14 +58,8 @@ st.markdown("""
         color: #ffffff !important;
         font-weight: bold !important;
     }
-    </style>
-""", unsafe_allow_html=True)
 
-# --- ΤΟ ΥΠΟΛΟΙΠΟ SCRIPT ΣΟΥ ΞΕΚΙΝΑΕΙ ΕΔΩ ---
-
-# Custom CSS
-st.markdown("""
-    <style>
+    /* Custom CSS */
     .stApp { background-color: #0b0e14; color: #e6edf3; }
     div[data-testid="stMetricValue"] { color: #58a6ff !important; font-weight: bold; font-size: 1.5rem !important; }
     .signal-card { padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; }
@@ -346,7 +338,7 @@ if data and 'market_data' in data:
         st.subheader(t["gauge_title"])
         fig_g = go.Figure(go.Indicator(mode="gauge+number", value=current_rsi, title={'text': f"RSI Score: {selected_coin_name.upper()}", 'font': {'color':'white'}}, gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#00f2fe"}}))
         fig_g.update_layout(height=200, margin=dict(l=10, r=10, t=30, b=10), paper_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_g, use_container_width="stretch")
+        st.plotly_chart(fig_g, use_container_width=True)
 
         st.caption(t["reddit_pie"])
         fig_pie = px.pie(values=list(sentiment_counts), names=['Positive', 'Neutral', 'Negative'], color_discrete_sequence=['#00c853', '#ffee58', '#ff1744'], hole=0.4)
