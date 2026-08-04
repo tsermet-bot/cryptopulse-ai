@@ -2,9 +2,6 @@ import warnings
 warnings.filterwarnings('ignore')
 
 from streamlit_autorefresh import st_autorefresh
-
-# Αυτόματη ανανέωση κάθε 30 δευτερόλεπτα
-count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 import streamlit as st
 import requests
 import pandas as pd
@@ -21,11 +18,12 @@ sia = SentimentIntensityAnalyzer()
 
 # --- STREAMLIT PAGE CONFIG ---
 st.set_page_config(
-# --- STREAMLIT PAGE CONFIG ---
-st.set_page_config(
     page_title="CryptoPulse AI - Institutional Terminal",
     layout="wide"
 )
+
+# Αυτόματη ανανέωση κάθε 30 δευτερόλεπτα
+count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 
 # --- GLOBAL CUSTOM CSS FOR READABILITY ---
 st.markdown("""
