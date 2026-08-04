@@ -488,9 +488,6 @@ if data and 'market_data' in data:
         if st.button("🔔 Set Alert"):
             st.success(f"Alert active for {selected_coin_name} at ${target_a:,.2f}!")
 
-   except Exception as e:
-            st.error("API Connection Error. Please refresh.")
-
 # --- FOOTER DONATIONS & SOCIALS BOX ---
 st.markdown("---")
 st.markdown("""
