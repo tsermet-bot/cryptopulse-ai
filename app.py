@@ -23,34 +23,67 @@ count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 nltk.download('vader_lexicon', quiet=True)
 sia = SentimentIntensityAnalyzer()
 
-# --- GLOBAL CUSTOM CSS FOR READABILITY ---
+# --- GLOBAL CUSTOM CSS FOR READABILITY & SIDEBAR FIX ---
 st.markdown("""
     <style>
-    /* Γενικό κείμενο και παράγραφοι */
-    html, body, [class*="css"], p, span, label, div {
-        color: #e0e6ed !important;
+    /* Φόντο εφαρμογής */
+    .stApp { 
+        background-color: #0b0e14; 
+        color: #e6edf3; 
     }
     
-    /* Τίτλοι και επικεφαλίδες */
-    h1, h2, h3, h4, h5, h6 {
+    /* Sidebar Styling */
+    [data-testid="stSidebar"] {
+        background-color: #12161f !important;
+    }
+    
+    [data-testid="stSidebar"] * {
         color: #ffffff !important;
-        font-weight: bold !important;
     }
 
-    /* Πεδία εισαγωγής (Inputs / Text Areas / Selectboxes) */
-    .stTextInput input, .stNumberInput input, .stSelectbox div {
+    /* Selectboxes Styling */
+    div[data-baseweb="select"] > div {
+        background-color: #1e222d !important;
+        color: #ffffff !important;
+        border: 1px solid #363c4e !important;
+        border-radius: 6px !important;
+    }
+
+    div[data-baseweb="select"] span {
+        color: #ffffff !important;
+    }
+
+    /* Dropdown popup options */
+    ul[data-baseweb="menu"] {
+        background-color: #1e222d !important;
+    }
+
+    ul[data-baseweb="menu"] li, ul[data-baseweb="menu"] li * {
         color: #ffffff !important;
         background-color: #1e222d !important;
-        border: 1px solid #363c4e !important;
     }
 
-    /* Υπότιτλοι στα πεδία */
-    .stTextInput label, .stNumberInput label, .stSelectbox label {
-        color: #b2b9c0 !important;
-        font-weight: 600 !important;
+    ul[data-baseweb="menu"] li:hover {
+        background-color: #2a303f !important;
     }
 
-    /* Tabs (Καρτέλες) */
+    /* Metrics & Custom Components */
+    div[data-testid="stMetricValue"] { 
+        color: #58a6ff !important; 
+        font-weight: bold; 
+        font-size: 1.5rem !important; 
+    }
+    
+    .signal-card { 
+        padding: 12px; 
+        border-radius: 8px; 
+        text-align: center; 
+        font-weight: bold; 
+        font-size: 1.1rem; 
+        margin-bottom: 15px; 
+    }
+
+    /* Tabs */
     button[data-baseweb="tab"] {
         color: #a0aab5 !important;
     }
@@ -58,12 +91,6 @@ st.markdown("""
         color: #ffffff !important;
         font-weight: bold !important;
     }
-
-    /* Custom CSS */
-    .stApp { background-color: #0b0e14; color: #e6edf3; }
-    div[data-testid="stMetricValue"] { color: #58a6ff !important; font-weight: bold; font-size: 1.5rem !important; }
-    .signal-card { padding: 12px; border-radius: 8px; text-align: center; font-weight: bold; font-size: 1.1rem; margin-bottom: 15px; }
-    .donate-box { background-color: #161b22; border: 1px solid #30363d; padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -195,14 +222,15 @@ def get_top_100_coins():
                     "name": c['name']
                 }
             return coin_dict if coin_dict else fallback_dict
-    except Exception: pass
+    except Exception:
+        pass
     
     return fallback_dict
 
 coin_options = get_top_100_coins()
 selected_coin_label = st.sidebar.selectbox(t["select_coin"], list(coin_options.keys()), index=0)
 
-# Ασφαλής ανάκτηση - Αποφεύγει το KeyError αν αλλάξει η λίστα
+# SAFE FETCHING TO PREVENT KEYERROR
 if selected_coin_label in coin_options:
     selected_coin_info = coin_options[selected_coin_label]
 else:
@@ -406,7 +434,7 @@ if data and 'market_data' in data:
     with t_news:
         news_items = [
             {"Source": "CoinDesk", "Headline": f"Institutional Inflows into {selected_coin_name} Surge Following Market Rally", "Time": "10 mins ago"},
-            {"Source": "Cointelegraph", "Headline": "Federal Reserve Signals Potential Policy Shift; Crypto Markets React Positively", "Time": "35 mins ago"}
+            {"Source": "Cointelepragh", "Headline": "Federal Reserve Signals Potential Policy Shift; Crypto Markets React Positively", "Time": "35 mins ago"}
         ]
         for n in news_items:
             st.markdown(f"🔹 **[{n['Source']}]** {n['Headline']} _({n['Time']})_")
