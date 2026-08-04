@@ -60,7 +60,7 @@ st.markdown("""
     }
     </style>
 """, unsafe_allow_html=True)
- page_title="CryptoPulse AI — Institutional Terminal",
+    page_title="CryptoPulse AI — Institutional Terminal",
     page_icon="⚡",
     layout="wide")
 
@@ -533,4 +533,3 @@ st.markdown("""
         </div>
     </div>
 """, unsafe_allow_html=True)
-
