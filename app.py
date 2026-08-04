@@ -125,7 +125,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# --- TRADINGVIEW TICKER TAPE ---
+# --- TRADINGVIEW TICKER TAPE (ΚΟΡΔΕΛΑ) ---
 ticker_html = """
 <div class="tradingview-widget-container">
   <div class="tradingview-widget-container__widget"></div>
@@ -232,8 +232,6 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- CONTINUATION FROM PART 1: MAIN METRICS & DATA PROCESSING ---
-
 @st.cache_data(ttl=300)
 def get_crypto_data(coin):
     url = f"https://api.coingecko.com/api/v3/coins/{coin}"
@@ -289,61 +287,7 @@ if data and 'market_data' in data:
     rank = data.get('market_cap_rank', 100)
     current_rsi = float(ohlc_df['RSI'].iloc[-1]) if not ohlc_df.empty else 50.0
 
-    # Top Metric Tiles
-    m1, m2, m3, m4, m5, m6 = st.columns(6)
-    m1.metric(t["price"], f"${price:,.2f}" if price >= 1 else f"${price:.6f}", f"{price_change_24h:.2f}%")
-    m2.metric(t["rank"], f"#{rank}")
-    m3.metric(t["rsi"], f"{current_rsi:.1f}")
-    m4.metric(t["vol"], f"${volume/1e9:.2f}B")
-    m5.metric(t["fng"], f"{fng_df['value'].iloc[-1] if not fng_df.empty else 'N/A'}/100")
-    m6.metric(t["gas"], "18 Gwei 🟢")
-
-    st.markdown("---")
-
-    # Signal Banner
-    signal_text = "🔥 STRONG BUY / BULLISH" if price_change_24h > 0 and current_rsi < 60 else "⚖️ NEUTRAL / HOLD"
-    signal_color = "#00c853" if "BUY" in signal_text else "#ffee58"
-    st.markdown(f'<div class="signal-card" style="background-color: {signal_color}22; border: 2px solid {signal_color}; color: {signal_color};">🤖 CryptoPulse AI Consensus: {signal_text}</div>', unsafe_allow_html=True)
-
-    # Upper Visuals
-    c1, c2 = st.columns([1, 2])
-    with c1:
-        st.subheader(t["gauge_title"])
-        fig_g = go.Figure(go.Indicator(
-            mode="gauge+number", 
-            value=current_rsi, 
-            title={'text': f"RSI Score: {raw_sym}", 'font': {'color':'white'}}, 
-            gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#00f2fe"}}
-        ))
-        fig_g.update_layout(height=220, margin=dict(l=10, r=10, t=30, b=10), paper_bgcolor="rgba(0,0,0,0)")
-        st.plotly_chart(fig_g, use_container_width=True)
-
-    with c2:
-        st.subheader(f"{t['chart_title']} ({selected_coin_name})")
-        tv_widget = f"""
-            <div class="tradingview-widget-container" style="height:410px;width:100%">
-              <div id="tradingview_1" style="height:410px;width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
-              <script type="text/javascript">
-              new TradingView.widget({{
-                "autosize": true,
-                "symbol": "BINANCE:{tv_symbol}",
-                "interval": "D",
-                "timezone": "Etc/UTC",
-                "theme": "dark",
-                "style": "1",
-                "locale": "en",
-                "toolbar_bg": "#f1f3f6",
-                "enable_publishing": false,
-                "allow_symbol_change": true,
-                "container_id": "tradingview_1"
-              }});
-              </script>
-            </div>
-        """
-        components.html(tv_widget, height=420)
-
-    # --- INSTITUTIONAL SUITE (26 TABS) ---
+    # --- INSTITUTIONAL SUITE PRO (26 TOOLS) - ΜΕΤΑΦΕΡΘΗΚΕ ΕΔΩ ΑΜΕΣΩΣ ΚΑΤΩ ΑΠΟ ΤΗΝ ΚΟΡΔΕΛΑ ---
     st.markdown("---")
     st.subheader("🛠️ Institutional Suite Pro (26 Tools)")
 
@@ -478,6 +422,62 @@ if data and 'market_data' in data:
     with tabs[23]: st.write("### 📈 Volatility Surface & Implied Volatility")
     with tabs[24]: st.write("### 🏦 Exchange Treasury Reserves & Flows")
     with tabs[25]: st.write("### ⚡ Layer-1 / Layer-2 Network Health Metrics")
+
+    st.markdown("---")
+
+    # --- TOP METRIC TILES ---
+    m1, m2, m3, m4, m5, m6 = st.columns(6)
+    m1.metric(t["price"], f"${price:,.2f}" if price >= 1 else f"${price:.6f}", f"{price_change_24h:.2f}%")
+    m2.metric(t["rank"], f"#{rank}")
+    m3.metric(t["rsi"], f"{current_rsi:.1f}")
+    m4.metric(t["vol"], f"${volume/1e9:.2f}B")
+    m5.metric(t["fng"], f"{fng_df['value'].iloc[-1] if not fng_df.empty else 'N/A'}/100")
+    m6.metric(t["gas"], "18 Gwei 🟢")
+
+    st.markdown("---")
+
+    # Signal Banner
+    signal_text = "🔥 STRONG BUY / BULLISH" if price_change_24h > 0 and current_rsi < 60 else "⚖️ NEUTRAL / HOLD"
+    signal_color = "#00c853" if "BUY" in signal_text else "#ffee58"
+    st.markdown(f'<div class="signal-card" style="background-color: {signal_color}22; border: 2px solid {signal_color}; color: {signal_color};">🤖 CryptoPulse AI Consensus: {signal_text}</div>', unsafe_allow_html=True)
+
+    # Upper Visuals
+    c1, c2 = st.columns([1, 2])
+    with c1:
+        st.subheader(t["gauge_title"])
+        fig_g = go.Figure(go.Indicator(
+            mode="gauge+number", 
+            value=current_rsi, 
+            title={'text': f"RSI Score: {raw_sym}", 'font': {'color':'white'}}, 
+            gauge={'axis': {'range': [0, 100]}, 'bar': {'color': "#00f2fe"}}
+        ))
+        fig_g.update_layout(height=220, margin=dict(l=10, r=10, t=30, b=10), paper_bgcolor="rgba(0,0,0,0)")
+        st.plotly_chart(fig_g, use_container_width=True)
+
+    with c2:
+        st.subheader(f"{t['chart_title']} ({selected_coin_name})")
+        tv_widget = f"""
+            <div class="tradingview-widget-container" style="height:410px;width:100%">
+              <div id="tradingview_1" style="height:410px;width:100%"></div>
+              <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+              <script type="text/javascript">
+              new TradingView.widget({{
+                "autosize": true,
+                "symbol": "BINANCE:{tv_symbol}",
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "allow_symbol_change": true,
+                "container_id": "tradingview_1"
+              }});
+              </script>
+            </div>
+        """
+        components.html(tv_widget, height=420)
 
 # --- FOOTER WITH SUPPORT CALLOUT ---
 st.markdown("---")
