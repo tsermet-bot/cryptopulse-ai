@@ -151,26 +151,36 @@ components.html(ticker_html, height=50)
 
 # --- MULTI-LANGUAGE SYSTEM ---
 st.sidebar.header("⚙️ Settings / Ρυθμίσεις")
+
+# Αλλαγή: Πρώτη επιλογή τα EN 🇬🇧
 selected_lang = st.sidebar.selectbox(
     "🌐 Select Language / Γλώσσα:",
-    ["EL 🇬🇷", "EN 🇬🇧", "ES 🇪🇸", "TR 🇹🇷", "VI 🇻🇳", "PT 🇧🇷", "ZH 🇨🇳", "HI 🇮🇳"],
+    ["EN 🇬🇧", "EL 🇬🇷", "ES 🇪🇸", "TR 🇹🇷", "VI 🇻🇳", "PT 🇧🇷", "ZH 🇨🇳", "HI 🇮🇳"],
     index=0
 )
 
 translations = {
-    "EL 🇬🇷": {
-        "title": "⚡ CryptoPulse AI - Institutional Terminal",
-        "subtitle": "Live Order Flow • Derivatives Analytics • On-Chain Inflows • AI Consensus • Risk Engine",
-        "select_coin": "Επίλεξε Νόμισμα (Top 100):",
-        "price": "Τιμή USD", "rank": "Κατάταξη", "rsi": "RSI (14D)", "vol": "24ωρος Όγκος", "fng": "Φόβος & Απληστία", "gas": "ETH Gas",
-        "gauge_title": "🎯 Δείκτες & Sentiment", "chart_title": "📈 Interactive TradingView",
-    },
     "EN 🇬🇧": {
         "title": "⚡ CryptoPulse AI - Institutional Terminal",
         "subtitle": "Live Order Flow • Derivatives Analytics • On-Chain Inflows • AI Consensus • Risk Engine",
         "select_coin": "Select Crypto (Top 100):",
         "price": "Price USD", "rank": "Rank", "rsi": "RSI (14D)", "vol": "24h Volume", "fng": "Fear & Greed", "gas": "ETH Gas Fee",
         "gauge_title": "🎯 Gauge & Sentiment", "chart_title": "📈 Interactive TradingView",
+        "support_title": "🤝 Support our efforts",
+        "support_sub": "Your support helps maintain servers, integrate new APIs, and add advanced AI features.",
+        "revolut_btn": "Support via Revolut",
+        "footer_title": "🌟 Support CryptoPulse AI Development"
+    },
+    "EL 🇬🇷": {
+        "title": "⚡ CryptoPulse AI - Institutional Terminal",
+        "subtitle": "Live Order Flow • Derivatives Analytics • On-Chain Inflows • AI Consensus • Risk Engine",
+        "select_coin": "Επίλεξε Νόμισμα (Top 100):",
+        "price": "Τιμή USD", "rank": "Κατάταξη", "rsi": "RSI (14D)", "vol": "24ωρος Όγκος", "fng": "Φόβος & Απληστία", "gas": "ETH Gas",
+        "gauge_title": "🎯 Δείκτες & Sentiment", "chart_title": "📈 Interactive TradingView",
+        "support_title": "🤝 Ενίσχυσε την προσπάθεια",
+        "support_sub": "Η υποστήριξή σας βοηθά στη διατήρηση των servers, την ενσωμάτωση νέων APIs και την προσθήκη προηγμένων εργαλείων AI.",
+        "revolut_btn": "Υποστήριξη μέσω Revolut",
+        "footer_title": "🌟 Ενισχύστε την Ανάπτυξη του CryptoPulse AI"
     }
 }
 t = translations.get(selected_lang, translations["EN 🇬🇧"])
@@ -213,7 +223,7 @@ selected_coin_name = selected_coin_info["name"]
 
 # --- SIDEBAR SUPPORT ---
 st.sidebar.markdown("---")
-st.sidebar.subheader("🤝 Ενίσχυσε την προσπάθεια")
+st.sidebar.subheader(t["support_title"])
 revolut_url = "https://revolut.me/tsermet"
 solana_address = "8q54YcWKZuM8TSfjpdpo1eX5a5zD28uzgksLQRvQqDQ1"
 sidebar_revolut_qr = f"https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={revolut_url}"
@@ -223,7 +233,7 @@ st.sidebar.markdown(f"""
 <div class="support-card">
     <p style="color: #0075ff; font-weight: bold; margin-bottom: 5px; font-size: 13px;">💳 Revolut Pay</p>
     <img src="{sidebar_revolut_qr}" alt="Revolut QR" style="border-radius: 6px; width: 90px; height: 90px;" />
-    <br><a href="{revolut_url}" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; margin-top: 5px;">Support via Revolut</a>
+    <br><a href="{revolut_url}" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; display: inline-block; margin-top: 5px;">{t['revolut_btn']}</a>
 </div>
 <div class="support-card">
     <p style="color: #14f195; font-weight: bold; margin-bottom: 5px; font-size: 13px;">◎ Solana (SOL / USDC)</p>
@@ -287,7 +297,7 @@ if data and 'market_data' in data:
     rank = data.get('market_cap_rank', 100)
     current_rsi = float(ohlc_df['RSI'].iloc[-1]) if not ohlc_df.empty else 50.0
 
-    # --- INSTITUTIONAL SUITE PRO (26 TOOLS) - ΜΕΤΑΦΕΡΘΗΚΕ ΕΔΩ ΑΜΕΣΩΣ ΚΑΤΩ ΑΠΟ ΤΗΝ ΚΟΡΔΕΛΑ ---
+    # --- INSTITUTIONAL SUITE PRO (26 TOOLS) ---
     st.markdown("---")
     st.subheader("🛠️ Institutional Suite Pro (26 Tools)")
 
@@ -484,9 +494,9 @@ st.markdown("---")
 
 footer_html = f"""
 <div style="text-align: center; background-color: #161b22; padding: 25px; border-radius: 12px; border: 1px solid #30363d;">
-    <h4 style="color: #ffffff; margin-bottom: 10px;">🌟 Ενισχύστε την Ανάπτυξη του CryptoPulse AI</h4>
+    <h4 style="color: #ffffff; margin-bottom: 10px;">{t['footer_title']}</h4>
     <p style="color: #8b949e; font-size: 13px; margin-bottom: 20px;">
-        Η υποστήριξή σας βοηθά στη διατήρηση των servers, την ενσωμάτωση νέων APIs και την προσθήκη προηγμένων εργαλείων AI.
+        {t['support_sub']}
     </p>
     <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap;">
         <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 220px; text-align: center;">
@@ -494,7 +504,7 @@ footer_html = f"""
             <img src="{sidebar_revolut_qr}" alt="Revolut QR" style="border-radius: 6px; margin-bottom: 10px; width: 110px; height: 110px;" />
             <br>
             <a href="{revolut_url}" target="_blank" style="text-decoration: none; background-color: #0075ff; color: white; padding: 6px 12px; border-radius: 5px; font-size: 12px; font-weight: bold; display: inline-block; margin-top: 5px;">
-                Pay via Revolut
+                {t['revolut_btn']}
             </a>
         </div>
         <div style="background-color: #0d1117; padding: 15px; border-radius: 10px; border: 1px solid #21262d; width: 260px; text-align: center;">
