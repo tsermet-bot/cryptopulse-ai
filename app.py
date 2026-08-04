@@ -1,8 +1,12 @@
 import warnings
 warnings.filterwarnings('ignore')
 
-from streamlit_autorefresh import st_autorefresh
 import streamlit as st
+
+# --- STREAMLIT PAGE CONFIG (ΠΡΕΠΕΙ ΝΑ ΕΙΝΑΙ ΠΡΩΤΟ!) ---
+st.set_page_config(page_title="CryptoPulse AI - Institutional Terminal", layout="wide")
+
+from streamlit_autorefresh import st_autorefresh
 import requests
 import pandas as pd
 import numpy as np
@@ -12,18 +16,12 @@ import streamlit.components.v1 as components
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
+# Αυτόματη ανανέωση
+count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
+
 # --- INITIALIZE NLTK ---
 nltk.download('vader_lexicon', quiet=True)
 sia = SentimentIntensityAnalyzer()
-
-# --- STREAMLIT PAGE CONFIG ---
-st.set_page_config(
-    page_title="CryptoPulse AI - Institutional Terminal",
-    layout="wide"
-)
-
-# Αυτόματη ανανέωση κάθε 30 δευτερόλεπτα
-count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 
 # --- GLOBAL CUSTOM CSS FOR READABILITY ---
 st.markdown("""
