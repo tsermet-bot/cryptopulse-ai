@@ -272,21 +272,45 @@ def get_crypto_data(coin):
 
 @st.cache_data(ttl=300)
 def get_ohlc_data(coin):
-    url = f"https://api.coingecko.com/api/v3/coins/{coin}/ohlc?vs_currency=usd&days=30"
+    url = f"https://api.coingecko.com/api/v3/coins/{coin}/ohlc?vs_currency=usd&days=90"
     try:
         res = requests.get(url, timeout=10)
         if res.status_code == 200:
             df = pd.DataFrame(res.json(), columns=['timestamp', 'open', 'high', 'low', 'close'])
             df['date'] = pd.to_datetime(df['timestamp'], unit='ms')
             
+            # 1. RSI (14)
             delta = df['close'].diff()
             gain = (delta.where(delta > 0, 0)).rolling(window=14, min_periods=1).mean()
-            loss = (-delta.where(delta < 0, 0)).rolling(window=14, min_periods=1).mean()
-            loss = loss.replace(0, 0.00001)
+            loss = (-delta.where(delta < 0, 0)).rolling(window=14, min_periods=1).mean().replace(0, 0.00001)
             rs = gain / loss
             df['RSI'] = 100 - (100 / (1 + rs))
+
+            # 2. Stochastic RSI
+            min_rsi = df['RSI'].rolling(window=14, min_periods=1).min()
+            max_rsi = df['RSI'].rolling(window=14, min_periods=1).max()
+            df['Stoch_RSI'] = ((df['RSI'] - min_rsi) / (max_rsi - min_rsi).replace(0, 0.00001)) * 100
+
+            # 3, 4, 5. Moving Averages (EMA 20, EMA 50, EMA 200)
             df['EMA20'] = df['close'].ewm(span=20, adjust=False).mean()
             df['EMA50'] = df['close'].ewm(span=50, adjust=False).mean()
+            df['EMA200'] = df['close'].ewm(span=200, adjust=False).mean()
+
+            # 6. MACD & MACD Signal
+            ema12 = df['close'].ewm(span=12, adjust=False).mean()
+            ema26 = df['close'].ewm(span=26, adjust=False).mean()
+            df['MACD'] = ema12 - ema26
+            df['MACD_Signal'] = df['MACD'].ewm(span=9, adjust=False).mean()
+
+            # 7. Bollinger Bands (Upper, Lower, Middle)
+            df['SMA20'] = df['close'].rolling(window=20, min_periods=1).mean()
+            std = df['close'].rolling(window=20, min_periods=1).std().fillna(0)
+            df['BB_Upper'] = df['SMA20'] + (std * 2)
+            df['BB_Lower'] = df['SMA20'] - (std * 2)
+
+            # 8. Rate of Change (ROC Momentum)
+            df['ROC'] = df['close'].pct_change(periods=9) * 100
+
             return df
     except Exception: pass
     return pd.DataFrame()
@@ -471,19 +495,58 @@ if data and 'market_data' in data:
         fig_macro.update_layout(template="plotly_dark", height=280)
         st.plotly_chart(fig_macro, use_container_width=True)
 
-    # 5. TECHNICAL CONSENSUS
+    # 5. TECHNICAL CONSENSUS (9 TECHNICAL INDICATORS INCLUDED)
     with t_cons:
-        ema_val = ohlc_df['EMA20'].iloc[-1] if not ohlc_df.empty else price
-        indicators_data = [
-            {"Indicator": "EMA 20 / EMA 50 Crossover", "Status": "Bullish 🟢" if price > ema_val else "Bearish 🔴", "Value": f"${ema_val:,.2f}"},
-            {"Indicator": "RSI (14)", "Status": "Oversold (Buy) 🟢" if current_rsi < 35 else ("Overbought (Sell) 🔴" if current_rsi > 70 else "Neutral 🟡"), "Value": f"{current_rsi:.1f}"},
-            {"Indicator": "24h Volume Trend", "Status": "High Momentum 🟢" if volume > 1000000000 else "Low Volume 🟡", "Value": f"${volume/1e6:,.0f}M"},
-            {"Indicator": "24h Price Action", "Status": "Bullish 🟢" if price_change_24h > 0 else "Bearish 🔴", "Value": f"{price_change_24h:.2f}%"}
-        ]
+        if not ohlc_df.empty:
+            last = ohlc_df.iloc[-1]
+            rsi_v = last['RSI']
+            stoch_v = last['Stoch_RSI']
+            ema20_v = last['EMA20']
+            ema50_v = last['EMA50']
+            ema200_v = last['EMA200'] if not pd.isna(last['EMA200']) else ema50_v
+            macd_v = last['MACD']
+            macd_sig_v = last['MACD_Signal']
+            bb_lower_v = last['BB_Lower']
+            bb_upper_v = last['BB_Upper']
+            roc_v = last['ROC'] if not pd.isna(last['ROC']) else 0.0
+
+            # Calculation Score for 9 Indicators
+            scores = 0
+            if rsi_v < 40: scores += 1
+            elif rsi_v < 60: scores += 0.5
+            
+            if stoch_v < 20: scores += 1
+            elif stoch_v < 50: scores += 0.5
+
+            if ema20_v > ema50_v: scores += 1
+            if price > ema20_v: scores += 1
+            if price > ema200_v: scores += 1
+            if macd_v > macd_sig_v: scores += 1
+            if price <= bb_lower_v * 1.02: scores += 1
+            if roc_v > 0: scores += 1
+            if volume > 100000000: scores += 1
+
+            consensus_pct = int((scores / 9) * 100)
+            st.caption(f"🎯 **AI Multi-Indicator Confidence: {consensus_pct}%** (Based on 9 Technical Indicators)")
+
+            indicators_data = [
+                {"Indicator": "1. RSI (14)", "Status": "Oversold (Buy) 🟢" if rsi_v < 35 else ("Overbought (Sell) 🔴" if rsi_v > 70 else "Neutral 🟡"), "Value": f"{rsi_v:.1f}"},
+                {"Indicator": "2. Stochastic RSI", "Status": "Oversold 🟢" if stoch_v < 20 else ("Overbought 🔴" if stoch_v > 80 else "Neutral 🟡"), "Value": f"{stoch_v:.1f}"},
+                {"Indicator": "3. EMA Trend (20 vs 50)", "Status": "Bullish Crossover 🟢" if ema20_v > ema50_v else "Bearish Cross 🔴", "Value": f"${ema20_v:,.2f} / ${ema50_v:,.2f}"},
+                {"Indicator": "4. Short-Term Trend (Price vs EMA20)", "Status": "Bullish (Above) 🟢" if price > ema20_v else "Bearish (Below) 🔴", "Value": f"${ema20_v:,.2f}"},
+                {"Indicator": "5. Macro Trend (Price vs EMA200)", "Status": "Bull Market 🟢" if price > ema200_v else "Bear Market 🔴", "Value": f"${ema200_v:,.2f}"},
+                {"Indicator": "6. MACD Crossover", "Status": "Bullish Signal 🟢" if macd_v > macd_sig_v else "Bearish Signal 🔴", "Value": f"{macd_v:.2f}"},
+                {"Indicator": "7. Bollinger Bands Position", "Status": "Near Lower Band (Buy) 🟢" if price <= bb_lower_v*1.02 else ("Near Upper Band (Sell) 🔴" if price >= bb_upper_v*0.98 else "Middle Range 🟡"), "Value": f"${bb_lower_v:,.2f} - ${bb_upper_v:,.2f}"},
+                {"Indicator": "8. Rate of Change (ROC Momentum)", "Status": "Positive Momentum 🟢" if roc_v > 0 else "Negative Momentum 🔴", "Value": f"{roc_v:+.2f}%"},
+                {"Indicator": "9. 24h Volume Confirmation", "Status": "High Liquidity 🟢" if volume > 1000000000 else "Standard Volume 🟡", "Value": f"${volume/1e6:,.0f}M"}
+            ]
+        else:
+            indicators_data = [{"Indicator": "Data Loading", "Status": "N/A", "Value": "N/A"}]
+
         df_ind = pd.DataFrame(indicators_data)
         st.table(df_ind)
         csv_data = df_ind.to_csv(index=False).encode('utf-8')
-        st.download_button("📥 Export Indicators to CSV", csv_data, f"{selected_coin_name}_analysis.csv", "text/csv")
+        st.download_button("📥 Export 9 Indicators Analysis to CSV", csv_data, f"{selected_coin_name}_9_indicators.csv", "text/csv")
 
     # 6. LIQUIDATION HEATMAP
     with t_heat:
