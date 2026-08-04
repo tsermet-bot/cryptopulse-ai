@@ -66,8 +66,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
     page_title="CryptoPulse AI — Institutional Terminal",
     page_icon="⚡",
-    layout="wide"
-)
+    layout="wide")
 
 # Custom CSS
 st.markdown("""
