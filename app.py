@@ -3,7 +3,7 @@ warnings.filterwarnings('ignore')
 
 import streamlit as st
 
-# --- STREAMLIT PAGE CONFIG (ΠΡΕΠΕΙ ΝΑ ΕΙΝΑΙ ΠΡΩΤΟ!) ---
+# --- STREAMLIT PAGE CONFIG ---
 st.set_page_config(page_title="CryptoPulse AI - Institutional Terminal", layout="wide")
 
 from streamlit_autorefresh import st_autorefresh
@@ -23,12 +23,20 @@ count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 nltk.download('vader_lexicon', quiet=True)
 sia = SentimentIntensityAnalyzer()
 
-# --- GLOBAL CUSTOM CSS FOR HIGH CONTRAST & VISIBILITY ---
+# --- GLOBAL CUSTOM CSS FOR HIGH CONTRAST & DARK HEADER ---
 st.markdown("""
     <style>
+    /* Εξαφάνιση της πάνω άσπρης μπάρας του Streamlit */
+    header[data-testid="stHeader"] {
+        background-color: transparent !important;
+    }
+    header {
+        visibility: hidden !important;
+    }
+
     /* Φόντο εφαρμογής */
     .stApp { 
-        background-color: #0b0e14; 
+        background-color: #0b0e14 !important; 
         color: #ffffff !important; 
     }
     
@@ -67,28 +75,24 @@ st.markdown("""
         background-color: #2a303f !important;
     }
 
-    /* --- FIXED TABS VISIBILITY --- */
-    /* Όλες οι καρτέλες (Tabs) - Μη επιλεγμένες */
+    /* --- TABS VISIBILITY --- */
     button[data-baseweb="tab"] {
         background-color: transparent !important;
         border-radius: 6px 6px 0px 0px !important;
         padding: 8px 16px !important;
     }
     
-    /* Γράμματα στις μη επιλεγμένες καρτέλες */
     button[data-baseweb="tab"] div p, button[data-baseweb="tab"] p, button[data-baseweb="tab"] span {
         color: #9da8b6 !important;
         font-weight: 600 !important;
         font-size: 0.95rem !important;
     }
 
-    /* Ενεργή/Επιλεγμένη Καρτέλα */
     button[data-baseweb="tab"][aria-selected="true"] {
         background-color: #1a202c !important;
         border-bottom: 3px solid #58a6ff !important;
     }
 
-    /* Γράμματα στην ενεργή καρτέλα */
     button[data-baseweb="tab"][aria-selected="true"] div p, 
     button[data-baseweb="tab"][aria-selected="true"] p, 
     button[data-baseweb="tab"][aria-selected="true"] span {
@@ -122,7 +126,6 @@ selected_lang = st.sidebar.selectbox(
     index=0
 )
 
-# Dictionary with translations for ALL 8 languages
 translations = {
     "EL 🇬🇷": {
         "title": "⚡ CryptoPulse AI",
@@ -250,7 +253,6 @@ def get_top_100_coins():
 coin_options = get_top_100_coins()
 selected_coin_label = st.sidebar.selectbox(t["select_coin"], list(coin_options.keys()), index=0)
 
-# SAFE FETCHING TO PREVENT KEYERROR
 if selected_coin_label in coin_options:
     selected_coin_info = coin_options[selected_coin_label]
 else:
