@@ -101,6 +101,51 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# --- TRADINGVIEW TICKER TAPE (ΔΕΙΞΤΕΣ & ΠΕΤΡΕΛΑΙΟ) ---
+ticker_html = """
+<!-- TradingView Widget BEGIN -->
+<div class="tradingview-widget-container">
+  <div class="tradingview-widget-container__widget"></div>
+  <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+  {
+  "symbols": [
+    {
+      "proName": "FOREXCOM:SPXUSD",
+      "title": "S&P 500"
+    },
+    {
+      "proName": "FOREXCOM:NSXUSD",
+      "title": "US Tech 100 (Nasdaq)"
+    },
+    {
+      "proName": "FOREXCOM:DJI",
+      "title": "Dow Jones"
+    },
+    {
+      "proName": "TVC:USOIL",
+      "title": "Crude Oil"
+    },
+    {
+      "proName": "TVC:NI225",
+      "title": "Nikkei 225"
+    },
+    {
+      "proName": "SSE:000001",
+      "title": "Shanghai Composite"
+    }
+  ],
+  "showSymbolLogo": true,
+  "isTransparent": true,
+  "displayMode": "adaptive",
+  "colorTheme": "dark",
+  "locale": "en"
+}
+  </script>
+</div>
+<!-- TradingView Widget END -->
+"""
+components.html(ticker_html, height=50)
+
 # --- MULTI-LANGUAGE SYSTEM ---
 st.sidebar.header("⚙️ Settings / Ρυθμίσεις")
 selected_lang = st.sidebar.selectbox(
