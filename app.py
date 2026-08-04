@@ -23,17 +23,22 @@ count = st_autorefresh(interval=30000, limit=None, key="datarefresh")
 nltk.download('vader_lexicon', quiet=True)
 sia = SentimentIntensityAnalyzer()
 
-# --- GLOBAL CUSTOM CSS FOR HIGH CONTRAST & VISIBILITY ---
+# --- GLOBAL CUSTOM CSS FOR HIGH CONTRAST, DARK HEADER & VISIBILITY ---
 st.markdown("""
     <style>
-    /* Φόντο εφαρμογής */
-    .stApp { 
-        background-color: #0b0e14; 
+    /* 1. Καθολικό Dark Theme (Header, Toolbar, App Canvas) */
+    .stApp, [data-testid="stHeader"], header[data-testid="stHeader"] { 
+        background-color: #0b0e14 !important; 
         color: #ffffff !important; 
     }
-    
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] {
+
+    /* Κρύβει τη λευκή γραμμή / διακόσμηση πάνω πάνω */
+    [data-testid="stHeader"] {
+        background: transparent !important;
+    }
+
+    /* 2. Sidebar Styling & Background */
+    [data-testid="stSidebar"], section[data-testid="stSidebar"] {
         background-color: #12161f !important;
     }
     
@@ -41,7 +46,7 @@ st.markdown("""
         color: #ffffff !important;
     }
 
-    /* Selectboxes Styling */
+    /* 3. Διόρθωση Selectboxes & Dropdowns (Sidebar Inputs) */
     div[data-baseweb="select"] > div {
         background-color: #1e222d !important;
         color: #ffffff !important;
@@ -49,16 +54,19 @@ st.markdown("""
         border-radius: 6px !important;
     }
 
-    div[data-baseweb="select"] span {
+    div[data-baseweb="select"] input, 
+    div[data-baseweb="select"] span, 
+    div[data-baseweb="select"] div {
         color: #ffffff !important;
     }
 
-    /* Dropdown popup options */
+    /* Dropdown Popup Options Menu */
     ul[data-baseweb="menu"] {
         background-color: #1e222d !important;
     }
 
-    ul[data-baseweb="menu"] li, ul[data-baseweb="menu"] li * {
+    ul[data-baseweb="menu"] li, 
+    ul[data-baseweb="menu"] li * {
         color: #ffffff !important;
         background-color: #1e222d !important;
     }
@@ -67,28 +75,26 @@ st.markdown("""
         background-color: #2a303f !important;
     }
 
-    /* --- FIXED TABS VISIBILITY --- */
-    /* Όλες οι καρτέλες (Tabs) - Μη επιλεγμένες */
+    /* 4. Tabs Styling (Ενεργές & Μη Ενεργές) */
     button[data-baseweb="tab"] {
         background-color: transparent !important;
         border-radius: 6px 6px 0px 0px !important;
         padding: 8px 16px !important;
     }
     
-    /* Γράμματα στις μη επιλεγμένες καρτέλες */
-    button[data-baseweb="tab"] div p, button[data-baseweb="tab"] p, button[data-baseweb="tab"] span {
+    button[data-baseweb="tab"] div p, 
+    button[data-baseweb="tab"] p, 
+    button[data-baseweb="tab"] span {
         color: #9da8b6 !important;
         font-weight: 600 !important;
         font-size: 0.95rem !important;
     }
 
-    /* Ενεργή/Επιλεγμένη Καρτέλα */
     button[data-baseweb="tab"][aria-selected="true"] {
         background-color: #1a202c !important;
         border-bottom: 3px solid #58a6ff !important;
     }
 
-    /* Γράμματα στην ενεργή καρτέλα */
     button[data-baseweb="tab"][aria-selected="true"] div p, 
     button[data-baseweb="tab"][aria-selected="true"] p, 
     button[data-baseweb="tab"][aria-selected="true"] span {
@@ -96,7 +102,7 @@ st.markdown("""
         font-weight: bold !important;
     }
 
-    /* Metrics & Custom Components */
+    /* 5. Metrics & Custom Components */
     div[data-testid="stMetricValue"] { 
         color: #58a6ff !important; 
         font-weight: bold; 
