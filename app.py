@@ -176,6 +176,11 @@ st.caption(t["subtitle"])
 @st.cache_data(ttl=3600)
 def get_top_100_coins():
     url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+    fallback_dict = {
+        "Bitcoin (BTC)": {"id": "bitcoin", "symbol": "BTCUSD", "raw_symbol": "BTC", "name": "Bitcoin"},
+        "Ethereum (ETH)": {"id": "ethereum", "symbol": "ETHUSD", "raw_symbol": "ETH", "name": "Ethereum"},
+        "Solana (SOL)": {"id": "solana", "symbol": "SOLUSD", "raw_symbol": "SOL", "name": "Solana"}
+    }
     try:
         res = requests.get(url, timeout=10)
         if res.status_code == 200:
@@ -189,19 +194,20 @@ def get_top_100_coins():
                     "raw_symbol": c['symbol'].upper(),
                     "name": c['name']
                 }
-            return coin_dict
+            return coin_dict if coin_dict else fallback_dict
     except Exception: pass
     
-    return {
-        "Bitcoin (BTC)": {"id": "bitcoin", "symbol": "BTCUSD", "raw_symbol": "BTC", "name": "Bitcoin"},
-        "Ethereum (ETH)": {"id": "ethereum", "symbol": "ETHUSD", "raw_symbol": "ETH", "name": "Ethereum"},
-        "Solana (SOL)": {"id": "solana", "symbol": "SOLUSD", "raw_symbol": "SOL", "name": "Solana"}
-    }
+    return fallback_dict
 
 coin_options = get_top_100_coins()
 selected_coin_label = st.sidebar.selectbox(t["select_coin"], list(coin_options.keys()), index=0)
 
-selected_coin_info = coin_options[selected_coin_label]
+# Ασφαλής ανάκτηση - Αποφεύγει το KeyError αν αλλάξει η λίστα
+if selected_coin_label in coin_options:
+    selected_coin_info = coin_options[selected_coin_label]
+else:
+    selected_coin_info = list(coin_options.values())[0]
+
 crypto_id = selected_coin_info["id"]
 tv_symbol = selected_coin_info["symbol"]
 selected_coin_name = selected_coin_info["name"]
